@@ -1,15 +1,38 @@
-import { StyleSheet, Image } from 'react-native';
+import { StyleSheet, Image, Dimensions } from "react-native";
 
-export default function ImageViewer({ placeholderImageSource }: { placeholderImageSource: any }) {
+interface ImageViewerProps {
+  placeholderImageSource: any;
+  selectedImage?: string | undefined;
+  width: number;
+  height: number;
+}
+
+export default function ImageViewer({
+  placeholderImageSource,
+  selectedImage,
+  width,
+  height,
+}: ImageViewerProps) {
+  const screenWidth = Dimensions.get("window").width;
+  // Calculate the aspect ratio of the image
+  const aspectRatio = width / height;
+  // Calculate the new height based on the screen width and the aspect ratio
+  const newHeight = screenWidth / aspectRatio;
+
+  const imageSource = selectedImage
+    ? { uri: selectedImage }
+    : placeholderImageSource;
+  // return <Image source={imageSource} style={{ width, height }} />;
   return (
-    <Image source={placeholderImageSource} style={styles.image} />
+    <Image
+      source={imageSource}
+      style={{ width: screenWidth, height: newHeight, resizeMode: "contain" }}
+    />
   );
 }
 
 const styles = StyleSheet.create({
   image: {
-    width: 320,
-    height: 440,
     borderRadius: 18,
   },
 });
