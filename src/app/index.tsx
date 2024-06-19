@@ -34,7 +34,7 @@ export default function Index() {
     }
   };
 
-  const sendImage = async (text: string, imageUri: string) => {
+  const sendImage = async (imageUri: string) => {
     try {
       // If there's an image, read it as base64
       let imageBase64 = null;
@@ -44,8 +44,6 @@ export default function Index() {
         });
       }
 
-      // console.log(`imageBase64: ${imageBase64}`);
-
       console.log(`Connect to API_URL: ${API_URL}`);
 
       const response = await fetch(API_URL, {
@@ -54,13 +52,10 @@ export default function Index() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          text: "What's in this image?",
           imageBase64,
         }),
         reactNative: { textStreaming: true },
       });
-
-      console.log("Response body:", response.body);
 
       if (!response.ok) {
         throw new Error(`Error: ${response.status} - ${response.statusText}`);
@@ -69,8 +64,6 @@ export default function Index() {
       if (response.body === null) {
         throw new Error("Response body is null");
       }
-
-      console.log("Response body:", response.body);
 
       const reader = response.body.getReader();
       const decoder = new TextDecoder("utf-8");
@@ -113,12 +106,13 @@ export default function Index() {
         <Button
           className=" bg-black px-8 py-3 rounded-lg mt-4"
           textClassName="text-white"
-          onPress={() =>
-            sendImage(
-              "What’s in this image?",
-              selectedImage?.selectedImage ?? ""
-            )
-          }
+          onPress={() => {
+            if (!selectedImage || !selectedImage.selectedImage) {
+              alert("You did not select any image.");
+              return;
+            }
+            sendImage(selectedImage.selectedImage);
+          }}
           title="Send the photo"
         />
       </View>
